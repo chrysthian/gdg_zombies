@@ -5,7 +5,7 @@ export default class Keyboard {
     this._pressed = new Int16Array(256);
 
     for (let i = 0, len = this._pressed.length; i < len; i++) {
-      this._pressed[i] = -1;
+      this._pressed[i] = 0;
     }
   }
 
@@ -19,7 +19,7 @@ export default class Keyboard {
   }
 
   isDown = (keyCode) => {
-    return (this._pressed[keyCode] === -1) ? null : this._pressed[keyCode];
+    return (this._pressed[keyCode] === 0) ? null : this._pressed[keyCode];
   }
 
   onKeyDown = (event) => {
@@ -39,6 +39,6 @@ export default class Keyboard {
   };
 
   onKeyUp = (event) => { 
-    this._pressed[event.keyCode] = -1;
+    this._pressed[event.keyCode] = 0;
   };
 }
