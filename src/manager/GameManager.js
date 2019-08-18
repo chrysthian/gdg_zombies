@@ -1,65 +1,78 @@
-import * as PIXI from 'pixi.js'
-import Keyboard from 'core/io/Keyboard'
-import Mouse from 'core/io/Mouse'
+import * as PIXI from 'pixi.js';
 
 class GameManager {
   constructor() {
-    this.objects = []
-    this.keyboard = new Keyboard()
-    this.mouse = new Mouse()
+    this.objects = [];
 
-    this.loader = PIXI.Loader.shared
-    this.loading = true
+    this.loader = PIXI.Loader.shared;
+    this.loading = true;
 
     this.sprites = {};
 
     //Create a Pixi Application
     this.pixi = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight - 3,
+      width: window.innerWidth - 10,
+      height: window.innerHeight - 10,
       backgroundColor: 0x1099bb,
-      resolution: window.devicePixelRatio || 1,
-    })
+      resolution: window.devicePixelRatio || 1
+    });
   }
 
   init = () => {
     //Add the canvas that Pixi automatically created for you to the HTML document
-    document.body.appendChild(this.pixi.view)
+    document.body.appendChild(this.pixi.view);
 
-    //init inputs
-    this.keyboard.init()
-    this.mouse.init()
-
-    this.load()
-    this.run()
-  }
+    this.load();
+    this.run();
+  };
 
   load = () => {
-    this.loader
-      .add('generico_tosco', 'assets/generico_tosco.png')
-      .add('zombies', 'assets/zombies.png');
+    this.loader.add('generico_tosco', 'assets/generico_tosco.png');
+    this.loader.add('zombies', 'assets/zombies.png');
 
-    this.loader
-      .load((loader, resources) => {
-        this.sprites.generico_tosco = new PIXI.TilingSprite(resources.generico_tosco.texture);
-        this.sprites.zombies = new PIXI.TilingSprite(resources.zombies.texture);
-      });
+    this.loader.load((loader, resources) => {
+      this.sprites.generico_tosco = new PIXI.TilingSprite(resources.generico_tosco.texture, 64, 64);
+      this.sprites.zombies = new PIXI.TilingSprite(resources.zombies.texture, 64, 64);
+    });
 
-    this.loader
-      .onComplete.add(() => {
-        this.loading = false
-        console.log('all resources loded', this.sprites);
-      })
-  }
+    this.loader.onComplete.add(() => {
+      this.loading = false;
+
+      this.sprites.zombies.x = this.pixi.screen.width / 2;
+      this.sprites.zombies.y = this.pixi.screen.height / 2;
+      this.sprites.zombies.anchor.set(0.5);
+
+      this.pixi.stage.addChild(this.sprites.zombies);
+
+      console.log('all resources loded', this.sprites);
+    });
+  };
+
+  keyPressed = keyCode => {
+    return window.keyboard[keyCode] === 0 ? null : window.keyboard[keyCode];
+  };
 
   run = () => {
     this.pixi.ticker.add(delta => {
       // magic goes here!
       if (!this.loading) {
-        //console.log(delta)
+        let speed = 200 * (1 / this.pixi.ticker.FPS);
+
+        if (this.keyPressed(87)) {
+          this.sprites.zombies.y -= speed;
+        }
+        if (this.keyPressed(83)) {
+          this.sprites.zombies.y += speed;
+        }
+        if (this.keyPressed(65)) {
+          this.sprites.zombies.x -= speed;
+        }
+        if (this.keyPressed(68)) {
+          this.sprites.zombies.x += speed;
+        }
       }
     });
-  }
+  };
 }
 
 export default new GameManager();
