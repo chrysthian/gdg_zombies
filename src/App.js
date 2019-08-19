@@ -30,6 +30,15 @@ class App extends Component {
         onKeyUp={event => {
           this.keyboard.onKeyUp(event);
         }}
+        onMouseMove={event => {
+          this.mouse.onMouseMove(event);
+        }}
+        onMouseDown={event => {
+          this.mouse.onMouseDown(event);
+        }}
+        onMouseUp={event => {
+          this.mouse.onMouseUp(event);
+        }}
         tabIndex="0"
         style={{ position: 'absolute', overflow: 'hidden', width: window.innerWidth, height: window.innerHeight, zIndex: 10 }}
       >

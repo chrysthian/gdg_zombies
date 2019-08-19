@@ -17,7 +17,7 @@ export default class Keyboard {
     }
 
     window.keyboard[event.keyCode] = 1;
-    //console.log(event.keyCode);
+    // console.log(event.keyCode);
   };
 
   onKeyUp = event => {
