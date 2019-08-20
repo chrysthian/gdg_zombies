@@ -44,7 +44,7 @@ class App extends Component {
             this.mouse.onMouseUp(event);
           }}
           tabIndex="0"
-          style={{ position: 'absolute', overflow: 'hidden', width: window.innerWidth, height: window.innerHeight, zIndex: 10 }}
+          style={{ position: 'absolute', width: window.innerWidth, height: window.innerHeight, zIndex: 10 }}
         >
           Componente React o.o
         </div>

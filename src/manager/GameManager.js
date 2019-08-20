@@ -13,8 +13,8 @@ class GameManager {
 
     //Create a Pixi Application
     this.pixi = new PIXI.Application({
-      width: window.innerWidth - 10,
-      height: window.innerHeight - 10,
+      width: window.innerWidth,
+      height: window.innerHeight,
       backgroundColor: 0x1099bb,
       resolution: window.devicePixelRatio || 1
     });
