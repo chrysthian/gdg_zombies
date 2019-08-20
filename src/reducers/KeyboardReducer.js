@@ -9,7 +9,7 @@ export const keyboard = (state = initialState, action) => {
     case ActionEnum.KEYBOARD:
         return {
             ...state,
-            data: action.payload,
+            pressed: action.payload,
         };
     default:
         return state;

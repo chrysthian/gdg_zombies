@@ -7,8 +7,14 @@ let success = function (payload) {
     };
 };
 
-export function keyPress(data) {
+export function keyDown(payload) {
+     return dispatch => {
+        dispatch(success( payload ));
+    };
+}
+
+export function keyUp(payload) {
     return dispatch => {
-        dispatch(success({ data }));
+        dispatch(success( payload ));
     };
 }

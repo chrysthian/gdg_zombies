@@ -2,13 +2,11 @@ import KEYS from './Keys';
 
 export default class Keyboard {
   constructor() {
-    let pressed = new Int16Array(256);
+    this.pressed = new Int16Array(256);
 
-    for (let i = 0, len = pressed.length; i < len; i++) {
-      pressed[i] = 0;
+    for (let i = 0, len = this.pressed.length; i < len; i++) {
+      this.pressed[i] = 0;
     }
-
-    window.keyboard = pressed;
   }
 
   onKeyDown = event => {
@@ -16,11 +14,12 @@ export default class Keyboard {
       event.preventDefault();
     }
 
-    window.keyboard[event.keyCode] = 1;
-    // console.log(event.keyCode);
+    this.pressed[event.keyCode] = 1;
+    return this.pressed
   };
 
   onKeyUp = event => {
-    window.keyboard[event.keyCode] = 0;
+    this.pressed[event.keyCode] = 0;
+    return this.pressed
   };
 }

@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Store } from 'store';
 
 class GameManager {
   constructor() {
@@ -16,6 +17,11 @@ class GameManager {
       backgroundColor: 0x1099bb,
       resolution: window.devicePixelRatio || 1
     });
+
+    // bind to store!
+    Store.subscribe(() => {
+      this.keyboard = Store.getState().keyboard.pressed
+    })
   }
 
   init = () => {
@@ -49,12 +55,14 @@ class GameManager {
   };
 
   keyPressed = keyCode => {
-    return window.keyboard[keyCode] === 0 ? null : window.keyboard[keyCode];
+    if (this.keyboard) {
+      return this.keyboard[keyCode] === 0 ? null : this.keyboard[keyCode];
+    }
+    return null
   };
 
   run = () => {
     this.pixi.ticker.add(delta => {
-      // magic goes here!
       if (!this.loading) {
         let speed = 200 * (1 / this.pixi.ticker.FPS);
 
