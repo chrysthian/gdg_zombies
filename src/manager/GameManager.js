@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import KEYS from 'core/io/Keys';
 import { Store } from 'store';
 
 class GameManager {
@@ -18,7 +19,7 @@ class GameManager {
       resolution: window.devicePixelRatio || 1
     });
 
-    // bind to store!
+    // bind to store! o/
     Store.subscribe(() => {
       this.keyboard = Store.getState().keyboard.pressed
     })
@@ -66,16 +67,16 @@ class GameManager {
       if (!this.loading) {
         let speed = 200 * (1 / this.pixi.ticker.FPS);
 
-        if (this.keyPressed(87)) {
+        if (this.keyPressed(KEYS.W)) {
           this.sprites.zombies.y -= speed;
         }
-        if (this.keyPressed(83)) {
+        if (this.keyPressed(KEYS.S)) {
           this.sprites.zombies.y += speed;
         }
-        if (this.keyPressed(65)) {
+        if (this.keyPressed(KEYS.A)) {
           this.sprites.zombies.x -= speed;
         }
-        if (this.keyPressed(68)) {
+        if (this.keyPressed(KEYS.D)) {
           this.sprites.zombies.x += speed;
         }
       }
