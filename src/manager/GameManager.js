@@ -9,6 +9,9 @@ class GameManager {
     this.loader = PIXI.Loader.shared;
     this.loading = true;
 
+    this.animationSpeed = 200;
+    this.elapsed = 0;
+
     this.sprites = {};
 
     //Create a Pixi Application
@@ -78,6 +81,13 @@ class GameManager {
         }
         if (this.keyPressed(KEYS.D)) {
           this.sprites.zombies.x += speed;
+        }
+
+        if (this.elapsed > this.animationSpeed) {
+          this.sprites.zombies.tilePosition.x = (this.sprites.zombies.tilePosition.x === 192) ? 0 : this.sprites.zombies.tilePosition.x + 64
+          this.elapsed = 0
+        } else{
+          this.elapsed += this.pixi.ticker.elapsedMS
         }
       }
     });
