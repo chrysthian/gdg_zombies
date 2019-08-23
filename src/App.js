@@ -3,9 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import './App.css';
 import GameManager from 'manager/GameManager';
-import Keyboard from 'core/io/Keyboard';
 import Mouse from 'core/io/Mouse';
-import { keyDown, keyUp } from 'action/KeyboardAction'
 import { mouseDown, mouseUp, mouseMove } from 'action/MouseAction'
 import { Container } from 'nes-react';
 
@@ -16,7 +14,6 @@ class App extends Component {
 
     this.app = React.createRef();
 
-    this.keyboard = new Keyboard();
     this.mouse = new Mouse();
   }
 
@@ -29,12 +26,6 @@ class App extends Component {
       <div
         className="App"
         ref={this.app}
-        onKeyDown={event => {
-          this.props.keyDown(this.keyboard.onKeyDown(event))
-        }}
-        onKeyUp={event => {
-          this.props.keyUp(this.keyboard.onKeyUp(event))
-        }}
         onMouseMove={event => {
           this.props.mouseMove(this.mouse.onMouseMove(event));
         }}
@@ -48,8 +39,8 @@ class App extends Component {
         style={{ position: 'absolute', width: window.innerWidth, height: window.innerHeight, zIndex: 10 }}
       >
         <Container
-          title={`Colisões:`}
-          style={{ fontSize: '60px'}}
+          title={`Cérebros devorados:`}
+          style={{ fontSize: '40px' }}
           centered
           dark>
           {this.props.score}
@@ -67,8 +58,6 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      keyUp,
-      keyDown,
       mouseDown,
       mouseUp,
       mouseMove
