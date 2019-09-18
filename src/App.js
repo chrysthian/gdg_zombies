@@ -13,7 +13,6 @@ class App extends Component {
     GameManager.init();
 
     this.app = React.createRef();
-
     this.mouse = new Mouse();
   }
 

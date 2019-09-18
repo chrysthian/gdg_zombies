@@ -37,7 +37,6 @@ class GameManager {
   }
 
   init = () => {
-    //Add the canvas that Pixi automatically created for you to the HTML document
     document.body.appendChild(this.pixi.view);
 
     this.load();
@@ -71,7 +70,6 @@ class GameManager {
 
   buttonPressed = keyCode => {
     if (this.mouse) {
-      //console.log(this.mouse.pressed[0], keyCode, MOUSE_BUTTONS.)
       return this.mouse.pressed[keyCode] === 0 ? null : this.mouse.pressed[keyCode];
     }
     return null
