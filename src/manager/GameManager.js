@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Store } from 'store';
 import Vector3 from '../core/Vector3';
-import { changeScore } from 'action/ScoreAction'
+import { changeScore } from 'action/ScoreAction';
 import MOUSE_BUTTONS from 'core/io/MouseButtons';
 
 class GameManager {
@@ -17,8 +17,8 @@ class GameManager {
     this.sprites = {};
 
     this.direction_buffer = new Vector3();
-    this.zombie_buffer = new Vector3()
-    this.up = new Vector3(0, 1, 0)
+    this.zombie_buffer = new Vector3();
+    this.up = new Vector3(0, 1, 0);
     this.brainActive = true;
 
     //Create a Pixi Application
@@ -31,9 +31,9 @@ class GameManager {
 
     // bind to store! o/
     Store.subscribe(() => {
-      this.mouse = Store.getState().mouse
-      this.score = Store.getState().score
-    })
+      this.mouse = Store.getState().mouse;
+      this.score = Store.getState().score;
+    });
   }
 
   init = () => {
@@ -72,41 +72,41 @@ class GameManager {
     if (this.mouse) {
       return this.mouse.pressed[keyCode] === 0 ? null : this.mouse.pressed[keyCode];
     }
-    return null
+    return null;
   };
 
   getRotation = () => {
     if (this.mouse) {
-      this.zombie_buffer.set(this.sprites.zombies.x, this.sprites.zombies.y, 0)
+      this.zombie_buffer.set(this.sprites.zombies.x, this.sprites.zombies.y, 0);
       this.direction_buffer.subVectors(this.mouse.position, this.zombie_buffer);
-      return (this.mouse.position.x > this.sprites.zombies.x) ? -this.up.angleTo(this.direction_buffer) : this.up.angleTo(this.direction_buffer)
+      return this.mouse.position.x > this.sprites.zombies.x ? -this.up.angleTo(this.direction_buffer) : this.up.angleTo(this.direction_buffer);
     }
     return 0;
-  }
+  };
 
   run = () => {
     this.pixi.ticker.add(delta => {
       if (!this.loading) {
         let speed = 200 * (1 / this.pixi.ticker.FPS);
 
-        this.sprites.zombies.rotation = this.getRotation()
+        this.sprites.zombies.rotation = this.getRotation();
 
         if (this.mouse) {
           if (this.brainActive) {
-            this.direction_buffer.normalize()
+            this.direction_buffer.normalize();
             this.sprites.zombies.x += this.direction_buffer.x * speed;
             this.sprites.zombies.y += this.direction_buffer.y * speed;
 
-            this.sprites.brain.x = this.mouse.position.x
-            this.sprites.brain.y = this.mouse.position.y
+            this.sprites.brain.x = this.mouse.position.x;
+            this.sprites.brain.y = this.mouse.position.y;
 
             if (this.zombie_buffer.distanceTo(this.mouse.position) <= 64 && this.score) {
-              Store.dispatch(changeScore(this.score.score + 1));
+              Store.dispatch(changeScore(this.score.value + 1));
               this.brainActive = false;
             }
           } else {
-            this.sprites.brain.x = -100
-            this.sprites.brain.y = -100
+            this.sprites.brain.x = -100;
+            this.sprites.brain.y = -100;
           }
 
           if (this.buttonPressed(MOUSE_BUTTONS.MOUSE_LEFT)) {
@@ -115,10 +115,10 @@ class GameManager {
         }
 
         if (this.elapsed > this.animationSpeed) {
-          this.sprites.zombies.tilePosition.x = (this.sprites.zombies.tilePosition.x === 192) ? 0 : this.sprites.zombies.tilePosition.x + 64
-          this.elapsed = 0
+          this.sprites.zombies.tilePosition.x = this.sprites.zombies.tilePosition.x === 192 ? 0 : this.sprites.zombies.tilePosition.x + 64;
+          this.elapsed = 0;
         } else {
-          this.elapsed += this.pixi.ticker.elapsedMS
+          this.elapsed += this.pixi.ticker.elapsedMS;
         }
       }
     });
