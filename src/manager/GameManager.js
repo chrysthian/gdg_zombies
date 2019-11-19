@@ -4,6 +4,7 @@ import Vector3 from 'core/Vector3';
 import { changeScore } from 'action/ScoreAction';
 import MOUSE_BUTTONS from 'core/io/MouseButtons';
 import KEYS from 'core/io/Keys';
+import * as Constants from 'core/Constants';
 
 class GameManager {
   constructor() {
@@ -12,7 +13,6 @@ class GameManager {
     this.loader = PIXI.Loader.shared;
     this.loading = true;
 
-    this.animationSpeed = 200;
     this.elapsed = 0;
 
     this.sprites = {};
@@ -171,7 +171,7 @@ class GameManager {
           }
         }
 
-        if (this.elapsed > this.animationSpeed) {
+        if (this.elapsed > Constants.ANIMATION_SPEED) {
           this.sprites.zombie.tilePosition.x = this.sprites.zombie.tilePosition.x === 192 ? 0 : this.sprites.zombie.tilePosition.x + 64;
           this.elapsed = 0;
         } else {
