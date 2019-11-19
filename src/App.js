@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 import './App.css';
 import GameManager from 'manager/GameManager';
 import Mouse from 'core/io/Mouse';
+import Keyboard from 'core/io/Keyboard';
 import { mouseDown, mouseUp, mouseMove } from 'action/MouseAction';
+import { keyDown, keyUp } from 'action/KeyboardAction';
 import { Container } from 'nes-react';
 
 class App extends Component {
@@ -14,6 +16,7 @@ class App extends Component {
 
     this.app = React.createRef();
     this.mouse = new Mouse();
+    this.keyboard = new Keyboard();
   }
 
   componentDidMount() {
@@ -25,6 +28,12 @@ class App extends Component {
       <div
         className="App"
         ref={this.app}
+        onKeyDown={event => {
+          this.props.keyDown(this.keyboard.onKeyDown(event));
+        }}
+        onKeyUp={event => {
+          this.props.keyUp(this.keyboard.onKeyUp(event));
+        }}
         onMouseMove={event => {
           this.props.mouseMove(this.mouse.onMouseMove(event));
         }}
@@ -54,7 +63,9 @@ const mapDispatchToProps = dispatch =>
     {
       mouseDown,
       mouseUp,
-      mouseMove
+      mouseMove,
+      keyDown,
+      keyUp
     },
     dispatch
   );
