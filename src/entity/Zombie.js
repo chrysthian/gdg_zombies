@@ -37,6 +37,7 @@ export default class Bullet extends GameObject {
         this.position.y = Math.random() * this.canvasHeight;
         break;
       case 4:
+      default:
         this.position.x = Math.random() * this.canvasWidth;
         this.position.y = this.canvasHeight + 63;
         break;
