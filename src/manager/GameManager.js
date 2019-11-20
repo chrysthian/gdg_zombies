@@ -5,23 +5,25 @@ import { changeScore } from 'action/ScoreAction';
 import MOUSE_BUTTONS from 'core/io/MouseButtons';
 import KEYS from 'core/io/Keys';
 import * as Constants from 'core/Constants';
+import Bullet from '../entity/Bullet';
+import Zombie from '../entity/Zombie';
 
 class GameManager {
   constructor() {
-    this.objects = [];
-
     this.loader = PIXI.Loader.shared;
     this.loading = true;
 
-    this.elapsed = 0;
+    this.elapsedSpriteAnimation = 0;
+    this.elapsedTimeBetweenShots = Constants.TIME_BETWEEN_SHOTS;
 
     this.sprites = {};
 
     this.hero_position = new Vector3();
     this.hero_direction = new Vector3();
 
-    this.zombie_position = new Vector3();
-    this.zombie_direction = new Vector3();
+    this.zombie = null;
+
+    this.bullets = [];
 
     this.up = new Vector3(0, 1, 0);
     this.heroAlive = true;
@@ -76,6 +78,12 @@ class GameManager {
       this.pixi.stage.addChild(this.sprites.hero);
       this.pixi.stage.addChild(this.graphics);
 
+      for (let i = 0; i < Constants.MAX_BULLETS; i++) {
+        this.bullets.push(new Bullet(this.pixi.screen.width, this.pixi.screen.height));
+      }
+
+      this.zombie = new Zombie(this.pixi.screen.width, this.pixi.screen.height);
+
       console.log('all resources loded', this.sprites);
     });
   };
@@ -94,6 +102,22 @@ class GameManager {
     return null;
   };
 
+  shoot = elapsedMS => {
+    if (this.elapsedTimeBetweenShots > Constants.TIME_BETWEEN_SHOTS) {
+      for (let i = 0; i < Constants.MAX_BULLETS; i++) {
+        if (!this.bullets[i].isActive) {
+          this.bullets[i].isActive = true;
+          this.bullets[i].position.set(this.hero_position.x, this.hero_position.y, 0);
+          this.bullets[i].direction = this.hero_direction.clone();
+          this.elapsedTimeBetweenShots = 0;
+          return;
+        }
+      }
+    } else {
+      this.elapsedTimeBetweenShots += elapsedMS;
+    }
+  };
+
   getHeroRotation = () => {
     if (this.mouse) {
       this.hero_position.set(this.sprites.hero.x, this.sprites.hero.y, 0);
@@ -104,51 +128,69 @@ class GameManager {
   };
 
   getZombieRotation = () => {
-    this.zombie_position.set(this.sprites.zombie.x, this.sprites.zombie.y, 0);
-    this.zombie_direction.subVectors(this.hero_position, this.zombie_position);
-    return this.hero_position.x > this.sprites.zombie.x ? -this.up.angleTo(this.zombie_direction) : this.up.angleTo(this.zombie_direction);
+    this.zombie.position.set(this.sprites.zombie.x, this.sprites.zombie.y, 0);
+    this.zombie.direction.subVectors(this.hero_position, this.zombie.position);
+    return this.hero_position.x > this.sprites.zombie.x ? -this.up.angleTo(this.zombie.direction) : this.up.angleTo(this.zombie.direction);
+  };
+
+  renderShots = fps => {
+    this.graphics.clear();
+
+    for (let i = 0; i < Constants.MAX_BULLETS; i++) {
+      if (this.bullets[i].isActive) {
+        this.bullets[i].update(fps);
+        this.graphics.beginFill(0xf1c40f);
+        this.graphics.drawCircle(this.bullets[i].position.x, this.bullets[i].position.y, 4);
+        this.graphics.endFill();
+      }
+    }
+  };
+
+  checkCollisions = () => {
+    for (let i = 0; i < Constants.MAX_BULLETS; i++) {
+      if (this.bullets[i].isActive) {
+        if (this.zombie.position.distanceTo(this.bullets[i].position) <= 64 && this.score) {
+          if (this.zombie.life < 0) {
+            Store.dispatch(changeScore(this.score.value + 1));
+            this.zombie.reset();
+            this.sprites.zombie.x = this.zombie.position.x;
+            this.sprites.zombie.y = this.zombie.position.y;
+          } else {
+            this.zombie.life--;
+          }
+
+          this.bullets[i].reset();
+        }
+      }
+    }
   };
 
   run = () => {
     this.pixi.ticker.add(delta => {
       if (!this.loading) {
-        this.graphics.clear();
-
-        // Set the fill color
-        this.graphics.beginFill(0xf1c40f); // Red
-
-        // Draw a circle
-        this.graphics.drawCircle(this.hero_position.x, this.hero_position.y, 4); // drawCircle(x, y, radius)
-
-        // Applies fill to lines and shapes since the last call to beginFill.
-        this.graphics.endFill();
-
-        let speed = 200 * (1 / this.pixi.ticker.FPS);
+        this.renderShots(this.pixi.ticker.FPS);
 
         this.sprites.hero.rotation = this.getHeroRotation();
         this.sprites.zombie.rotation = this.getZombieRotation();
 
         if (this.mouse && this.keyboard) {
+          if (this.buttonPressed(MOUSE_BUTTONS.MOUSE_LEFT)) {
+            this.shoot(this.pixi.ticker.elapsedMS);
+          } else {
+            this.elapsedTimeBetweenShots = Constants.TIME_BETWEEN_SHOTS;
+          }
+
           if (this.heroAlive) {
-            this.zombie_direction.normalize();
-            this.sprites.zombie.x += this.zombie_direction.x * speed;
-            this.sprites.zombie.y += this.zombie_direction.y * speed;
-
-            // this.sprites.hero.x = this.mouse.position.x;
-            // this.sprites.hero.y = this.mouse.position.y;
-
-            if (this.zombie_position.distanceTo(this.hero_position) <= 64 && this.score) {
-              Store.dispatch(changeScore(this.score.value + 1));
-              this.heroAlive = false;
-            }
+            this.zombie.update(this.pixi.ticker.FPS);
+            this.checkCollisions();
+            this.sprites.zombie.x = this.zombie.position.x;
+            this.sprites.zombie.y = this.zombie.position.y;
           } else {
             this.sprites.hero.x = this.pixi.screen.width / 2;
             this.sprites.hero.y = this.pixi.screen.height / 2;
           }
 
-          if (this.buttonPressed(MOUSE_BUTTONS.MOUSE_LEFT) || this.keyPressed(KEYS.W) || this.keyPressed(KEYS.A) || this.keyPressed(KEYS.S) || this.keyPressed(KEYS.D)) {
-            this.heroAlive = true;
-          }
+          let speed = Constants.HERO_MOVE_SPEED * (1 / this.pixi.ticker.FPS);
 
           if (this.keyPressed(KEYS.W)) {
             this.hero_direction.set(0, -1, 0);
@@ -171,11 +213,11 @@ class GameManager {
           }
         }
 
-        if (this.elapsed > Constants.ANIMATION_SPEED) {
+        if (this.elapsedSpriteAnimation > Constants.ANIMATION_SPEED) {
           this.sprites.zombie.tilePosition.x = this.sprites.zombie.tilePosition.x === 192 ? 0 : this.sprites.zombie.tilePosition.x + 64;
-          this.elapsed = 0;
+          this.elapsedSpriteAnimation = 0;
         } else {
-          this.elapsed += this.pixi.ticker.elapsedMS;
+          this.elapsedSpriteAnimation += this.pixi.ticker.elapsedMS;
         }
       }
     });

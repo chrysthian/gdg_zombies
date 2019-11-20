@@ -26,7 +26,7 @@ class App extends Component {
   render() {
     return (
       <div
-        className="App"
+        className='App'
         ref={this.app}
         onKeyDown={event => {
           this.props.keyDown(this.keyboard.onKeyDown(event));
@@ -43,10 +43,10 @@ class App extends Component {
         onMouseUp={event => {
           this.props.mouseUp(this.mouse.onMouseUp(event));
         }}
-        tabIndex="0"
+        tabIndex='0'
         style={{ position: 'absolute', width: window.innerWidth, height: window.innerHeight, zIndex: 10 }}
       >
-        <Container title={`Cérebros devorados:`} style={{ fontSize: '40px' }} centered dark>
+        <Container title={`Pontos:`} style={{ fontSize: '40px' }} centered dark>
           {this.props.score}
         </Container>
       </div>
@@ -70,7 +70,4 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

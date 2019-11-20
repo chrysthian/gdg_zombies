@@ -1,17 +1,11 @@
-import Vector3 from 'core/Vector3'
+import Vector3 from 'core/Vector3';
 
 export default class GameObject {
-  constructor() {
-    this.position = new Vector3();
-    this.rotation = new Vector3();
-    this.scale = new Vector3();
-
-    this.components = [];
+  constructor(position = new Vector3(), direction = new Vector3()) {
+    this.position = position;
+    this.direction = direction;
 
     this.isVisible = true;
-    this.isActive = true;
+    this.isActive = false;
   }
-
-  update = () => { }
-  render = () => { }
 }
