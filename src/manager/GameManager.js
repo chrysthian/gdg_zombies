@@ -7,6 +7,7 @@ import KEYS from 'core/io/Keys';
 import * as Constants from 'core/Constants';
 import Bullet from '../entity/Bullet';
 import Zombie from '../entity/Zombie';
+import Hero from '../entity/Hero';
 
 class GameManager {
   constructor() {
@@ -18,9 +19,7 @@ class GameManager {
 
     this.sprites = {};
 
-    this.hero_position = new Vector3();
-    this.hero_direction = new Vector3();
-
+    this.hero = null;
     this.zombie = null;
 
     this.bullets = [];
@@ -82,6 +81,7 @@ class GameManager {
         this.bullets.push(new Bullet(this.pixi.screen.width, this.pixi.screen.height));
       }
 
+      this.hero = new Hero(this.pixi.screen.width, this.pixi.screen.height);
       this.zombie = new Zombie(this.pixi.screen.width, this.pixi.screen.height);
 
       console.log('all resources loded', this.sprites);
@@ -107,8 +107,8 @@ class GameManager {
       for (let i = 0; i < Constants.MAX_BULLETS; i++) {
         if (!this.bullets[i].isActive) {
           this.bullets[i].isActive = true;
-          this.bullets[i].position.set(this.hero_position.x, this.hero_position.y, 0);
-          this.bullets[i].direction = this.hero_direction.clone();
+          this.bullets[i].position.set(this.hero.position.x, this.hero.position.y, 0);
+          this.bullets[i].direction = this.hero.direction.clone();
           this.elapsedTimeBetweenShots = 0;
           return;
         }
@@ -120,17 +120,17 @@ class GameManager {
 
   getHeroRotation = () => {
     if (this.mouse) {
-      this.hero_position.set(this.sprites.hero.x, this.sprites.hero.y, 0);
-      this.hero_direction.subVectors(this.mouse.position, this.hero_position);
-      return this.mouse.position.x > this.sprites.hero.x ? -this.up.angleTo(this.hero_direction) : this.up.angleTo(this.hero_direction);
+      this.hero.position.set(this.sprites.hero.x, this.sprites.hero.y, 0);
+      this.hero.direction.subVectors(this.mouse.position, this.hero.position);
+      return this.mouse.position.x > this.sprites.hero.x ? -this.up.angleTo(this.hero.direction) : this.up.angleTo(this.hero.direction);
     }
     return 0;
   };
 
   getZombieRotation = () => {
     this.zombie.position.set(this.sprites.zombie.x, this.sprites.zombie.y, 0);
-    this.zombie.direction.subVectors(this.hero_position, this.zombie.position);
-    return this.hero_position.x > this.sprites.zombie.x ? -this.up.angleTo(this.zombie.direction) : this.up.angleTo(this.zombie.direction);
+    this.zombie.direction.subVectors(this.hero.position, this.zombie.position);
+    return this.hero.position.x > this.sprites.zombie.x ? -this.up.angleTo(this.zombie.direction) : this.up.angleTo(this.zombie.direction);
   };
 
   renderShots = fps => {
@@ -193,23 +193,23 @@ class GameManager {
           let speed = Constants.HERO_MOVE_SPEED * (1 / this.pixi.ticker.FPS);
 
           if (this.keyPressed(KEYS.W)) {
-            this.hero_direction.set(0, -1, 0);
-            this.sprites.hero.y += this.hero_direction.y * speed;
+            this.hero.direction.set(0, -1, 0);
+            this.sprites.hero.y += this.hero.direction.y * speed;
           }
 
           if (this.keyPressed(KEYS.A)) {
-            this.hero_direction.set(-1, 0, 0);
-            this.sprites.hero.x += this.hero_direction.x * speed;
+            this.hero.direction.set(-1, 0, 0);
+            this.sprites.hero.x += this.hero.direction.x * speed;
           }
 
           if (this.keyPressed(KEYS.S)) {
-            this.hero_direction.set(0, 1, 0);
-            this.sprites.hero.y += this.hero_direction.y * speed;
+            this.hero.direction.set(0, 1, 0);
+            this.sprites.hero.y += this.hero.direction.y * speed;
           }
 
           if (this.keyPressed(KEYS.D)) {
-            this.hero_direction.set(1, 0, 0);
-            this.sprites.hero.x += this.hero_direction.x * speed;
+            this.hero.direction.set(1, 0, 0);
+            this.sprites.hero.x += this.hero.direction.x * speed;
           }
         }
 
