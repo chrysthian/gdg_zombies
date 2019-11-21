@@ -14,6 +14,7 @@ export default class Keyboard {
       event.preventDefault();
     }
 
+    console.log(event.key);
     this.pressed[event.keyCode] = 1;
     return this.pressed
   };

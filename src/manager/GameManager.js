@@ -21,7 +21,6 @@ class GameManager {
 
     this.hero = null;
     this.zombie = null;
-
     this.bullets = [];
 
     this.up = new Vector3(0, 1, 0);
